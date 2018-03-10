@@ -17,6 +17,7 @@
 package com.example.android.uamp.model;
 
 import android.support.v4.media.MediaMetadataCompat;
+import android.util.Log;
 
 import com.example.android.uamp.utils.LogHelper;
 
@@ -33,8 +34,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Utility class to get a list of MusicTrack's based on a server-side JSON
- * configuration.
+ * 从服务端获取Json格式的音乐路径列表的实用类
  */
 public class RemoteJSONSource implements MusicProviderSource {
 
@@ -59,7 +59,7 @@ public class RemoteJSONSource implements MusicProviderSource {
         try {
             int slashPos = CATALOG_URL.lastIndexOf('/');
             String path = CATALOG_URL.substring(0, slashPos + 1);
-            JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
+            JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);//下载JSON文件
             ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
             if (jsonObj != null) {
                 JSONArray jsonTracks = jsonObj.getJSONArray(JSON_MUSIC);
@@ -92,6 +92,7 @@ public class RemoteJSONSource implements MusicProviderSource {
 
         // Media is stored relative to JSON file
         if (!source.startsWith("http")) {
+            //最终的地址为http://storage.googleapis.com/automotive-media/ + source
             source = basePath + source;
         }
         if (!iconUrl.startsWith("http")) {
@@ -106,6 +107,9 @@ public class RemoteJSONSource implements MusicProviderSource {
         // the session metadata can be accessed by notification listeners. This is done in this
         // sample for convenience only.
         //noinspection ResourceType
+        // 在现实的music app中往MediaMetadata添加music source（因此在mediaSession.setMetadata中使用）并非是一个好主意
+        // 因为session metadata可以被notification监听者访问
+        // 为了方便起见，请按本示例进行操作
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
                 .putString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE, source)
@@ -121,8 +125,7 @@ public class RemoteJSONSource implements MusicProviderSource {
     }
 
     /**
-     * Download a JSON file from a server, parse the content and return the JSON
-     * object.
+     * 从服务端下载JSON文件，解析并返回JSON object
      *
      * @return result JSONObject containing the parsed representation.
      */
@@ -137,6 +140,7 @@ public class RemoteJSONSource implements MusicProviderSource {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }
+            Log.e(TAG,sb.toString());
             return new JSONObject(sb.toString());
         } catch (JSONException e) {
             throw e;

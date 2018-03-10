@@ -64,6 +64,7 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
 
         // Connect a media browser just to get the media session token. There are other ways
         // this can be done, for example by sharing the session token directly.
+        //创建媒体浏览客户端（MediaBrowserCompat）
         mMediaBrowser = new MediaBrowserCompat(this,
             new ComponentName(this, MusicService.class), mConnectionCallback, null);
     }
@@ -104,6 +105,9 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         // empty implementation, can be overridden by clients.
     }
 
+    /**
+     * 显示音频控制器fragment
+     */
     protected void showPlaybackControls() {
         LogHelper.d(TAG, "showPlaybackControls");
         if (NetworkHelper.isOnline(this)) {
@@ -116,6 +120,9 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         }
     }
 
+    /**
+     * 隐藏音频控制器fragment
+     */
     protected void hidePlaybackControls() {
         LogHelper.d(TAG, "hidePlaybackControls");
         getFragmentManager().beginTransaction()
@@ -146,6 +153,11 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         }
     }
 
+    /**
+     *
+     * @param token
+     * @throws RemoteException
+     */
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(this, token);
         MediaControllerCompat.setMediaController(this, mediaController);
@@ -167,6 +179,10 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
     }
 
     // Callback that ensures that we are showing the controls
+    /**
+     * 媒体控制器控制播放过程中的回调接口
+     * 这里主要是根据当前播放的状态决定PlaybackControlsFragment是否显示
+     */
     private final MediaControllerCompat.Callback mMediaControllerCallback =
         new MediaControllerCompat.Callback() {
             @Override
@@ -192,6 +208,10 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
             }
         };
 
+
+    /**
+     * 连接媒体浏览服务成功后的回调接口
+     */
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
         new MediaBrowserCompat.ConnectionCallback() {
             @Override

@@ -44,6 +44,8 @@ import static com.example.android.uamp.utils.MediaIDHelper.createMediaID;
 /**
  * Simple data provider for music tracks. The actual metadata source is delegated to a
  * MusicProviderSource defined by a constructor argument of this class.
+ * MusicProvider：简单的音乐路径数据提供者
+ * 真实的数据源是由MusicProviderSource授予的，MusicProviderSource由本类构造函数的参数定义
  */
 public class MusicProvider {
 
@@ -51,7 +53,7 @@ public class MusicProvider {
 
     private MusicProviderSource mSource;
 
-    // Categorized caches for music track data:
+    //音乐数据分类（按音乐类型）缓存
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByGenre;
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
 
@@ -219,6 +221,8 @@ public class MusicProvider {
     /**
      * Get the list of music tracks from a server and caches the track information
      * for future reference, keying tracks by musicId and grouping by genre.
+     * 从服务端获取音乐路径列表，以及缓存列表数据以便将来直接引用
+     * 使用musicId作为列表的关键字并将音乐按类型分组
      */
     public void retrieveMediaAsync(final Callback callback) {
         LogHelper.d(TAG, "retrieveMediaAsync called");
@@ -230,7 +234,7 @@ public class MusicProvider {
             return;
         }
 
-        // Asynchronously load the music catalog in a separate thread
+        //在单独的线程中异步加载音乐目录
         new AsyncTask<Void, Void, State>() {
             @Override
             protected State doInBackground(Void... params) {
@@ -262,6 +266,9 @@ public class MusicProvider {
         mMusicListByGenre = newMusicListByGenre;
     }
 
+    /**
+     * 通过MusicProviderSource（RemoteJSONSource）的迭代器检索Media资源
+     */
     private synchronized void retrieveMedia() {
         try {
             if (mCurrentState == State.NON_INITIALIZED) {
@@ -342,6 +349,7 @@ public class MusicProvider {
         // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
         // when we get a onPlayFromMusicID call, so we can create the proper queue based
         // on where the music was selected from (by artist, by genre, random, etc)
+        //我们可以基于在音乐类型的选择（由艺术家、流派、随机、等）构建适当的音乐队列
         String genre = metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE);
         String hierarchyAwareMediaID = MediaIDHelper.createMediaID(
                 metadata.getDescription().getMediaId(), MEDIA_ID_MUSICS_BY_GENRE, genre);

@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 展示音乐队列的Fragment
  * A Fragment that lists all the various browsable queues available
  * from a {@link android.service.media.MediaBrowserService}.
  * <p/>
@@ -70,6 +71,7 @@ public class MediaBrowserFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             // We don't care about network changes while this fragment is not associated
             // with a media ID (for example, while it is being initialized)
+            //在fragment与mediaID未关联期间（例如mediaID正在初始化）我们不用去关心网络的变化
             if (mMediaId != null) {
                 boolean isOnline = NetworkHelper.isOnline(context);
                 if (isOnline != oldOnline) {
@@ -85,6 +87,9 @@ public class MediaBrowserFragment extends Fragment {
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
+    /**
+     * 媒体控制器控制播放过程中的回调接口
+     */
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
         @Override
@@ -96,7 +101,7 @@ public class MediaBrowserFragment extends Fragment {
             LogHelper.d(TAG, "Received metadata change to media ",
                     metadata.getDescription().getMediaId());
             mBrowserAdapter.notifyDataSetChanged();
-        }
+        }//播放的媒体数据发生变化时的回调
 
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
@@ -104,9 +109,12 @@ public class MediaBrowserFragment extends Fragment {
             LogHelper.d(TAG, "Received state change: ", state);
             checkForUserVisibleErrors(false);
             mBrowserAdapter.notifyDataSetChanged();
-        }
+        }//播放状态发生改变时的回调
     };
 
+    /**
+     * 向媒体流量服务(MediaBrowserService)发起媒体浏览请求的回调接口
+     */
     private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
         new MediaBrowserCompat.SubscriptionCallback() {
             @Override
@@ -160,6 +168,8 @@ public class MediaBrowserFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 checkForUserVisibleErrors(false);
                 MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
+                //由于在onAttach将mMediaFragmentListener与MusicPlayerActivity（实现了MediaFragmentListener接口）进行了关联
+                //所以此处调用了MusicPlayerActivity.onMediaItemSelected方法
                 mMediaFragmentListener.onMediaItemSelected(item);
             }
         });
@@ -178,6 +188,7 @@ public class MediaBrowserFragment extends Fragment {
                 "  onConnected=" + mediaBrowser.isConnected());
 
         if (mediaBrowser.isConnected()) {
+            //连接网络加载音乐列表
             onConnected();
         }
 
@@ -223,6 +234,8 @@ public class MediaBrowserFragment extends Fragment {
     // Called when the MediaBrowser is connected. This method is either called by the
     // fragment.onStart() or explicitly by the activity in the case where the connection
     // completes after the onStart()
+    // 当MediaBrowser已经连接时调用
+    // 这个方法可在 fragment.onStart() 或 已知Activity在onStart后完成了连接的情况下调用
     public void onConnected() {
         if (isDetached()) {
             return;

@@ -63,6 +63,7 @@ public class MusicPlayerActivity extends BaseActivity
         initializeToolbar();
         initializeFromParams(savedInstanceState, getIntent());
 
+        //检查Activity重新创建时是否需要开启全屏播放器界面
         // Only check if a full screen player is needed on the first time:
         if (savedInstanceState == null) {
             startFullScreenActivityIfNeeded(getIntent());
@@ -71,6 +72,7 @@ public class MusicPlayerActivity extends BaseActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        //在Activity被回收时保存当前播放音频id
         String mediaId = getMediaId();
         if (mediaId != null) {
             outState.putString(SAVED_MEDIA_ID, mediaId);
@@ -81,11 +83,11 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     public void onMediaItemSelected(MediaBrowserCompat.MediaItem item) {
         LogHelper.d(TAG, "onMediaItemSelected, mediaId=" + item.getMediaId());
-        if (item.isPlayable()) {
+        if (item.isPlayable()) {//可播放状态
             MediaControllerCompat.getMediaController(MusicPlayerActivity.this).getTransportControls()
                     .playFromMediaId(item.getMediaId(), null);
-        } else if (item.isBrowsable()) {
-            navigateToBrowser(item.getMediaId());
+        } else if (item.isBrowsable()) {//可浏览状态
+            navigateToBrowser(item.getMediaId());//根据音频id切换fragment
         } else {
             LogHelper.w(TAG, "Ignoring MediaItem that is neither browsable nor playable: ",
                     "mediaId=", item.getMediaId());
@@ -124,6 +126,7 @@ public class MusicPlayerActivity extends BaseActivity
         // check if we were started from a "Play XYZ" voice search. If so, we save the extras
         // (which contain the query details) in a parameter, so we can reuse it later, when the
         // MediaSession is connected.
+        //INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH：通过给定的搜索关键字，来进行搜索，并自动播放。可用语音识别搜索
         if (intent.getAction() != null
             && intent.getAction().equals(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH)) {
             mVoiceSearchParams = intent.getExtras();
@@ -138,6 +141,10 @@ public class MusicPlayerActivity extends BaseActivity
         navigateToBrowser(mediaId);
     }
 
+    /**
+     * 在音频浏览器中根据mediaId切换至相应列表
+     * @param mediaId
+     */
     private void navigateToBrowser(String mediaId) {
         LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
         MediaBrowserFragment fragment = getBrowseFragment();

@@ -164,7 +164,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mMusicProvider = new MusicProvider();
 
         // To make the app more responsive, fetch and cache catalog information now.
+        //为了使应用程序更快地响应，在这就直接获取并缓存目录信息
         // This can help improve the response time in the method
+        //这有助于提高方法中的响应时间
         // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.
         mMusicProvider.retrieveMediaAsync(null /* Callback */);
 
@@ -200,7 +202,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mPlaybackManager = new PlaybackManager(this, getResources(), mMusicProvider, queueManager,
                 playback);
 
-        // Start a new MediaSession
+        //开始一个新的MediaSession
         mSession = new MediaSessionCompat(this, "MusicService");
         setSessionToken(mSession.getSessionToken());
         mSession.setCallback(mPlaybackManager.getMediaSessionCallback());
@@ -342,11 +344,14 @@ public class MusicService extends MediaBrowserServiceCompat implements
             result.sendResult(new ArrayList<MediaItem>());
         } else if (mMusicProvider.isInitialized()) {
             // if music library is ready, return immediately
+            //如果音乐库准备好了，立即返回
             result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
         } else {
             // otherwise, only return results when the music library is retrieved
+            //否则，仅在音乐库检索完毕后返回结果
             result.detach();
             mMusicProvider.retrieveMediaAsync(new MusicProvider.Callback() {
+                //完成音乐加载后的回调
                 @Override
                 public void onMusicCatalogReady(boolean success) {
                     result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
@@ -414,6 +419,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     /**
      * A simple handler that stops the service if playback is not active (playing)
+     * 当playback不在活跃状态时停止服务
      */
     private static class DelayedStopHandler extends Handler {
         private final WeakReference<MusicService> mWeakReference;
@@ -439,6 +445,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     /**
      * Session Manager Listener responsible for switching the Playback instances
      * depending on whether it is connected to a remote player.
+     * 会话管理监听器 根据是否连接到远程播放器 切换相应的Playback实例
      */
     private class CastSessionManagerListener implements SessionManagerListener<CastSession> {
 

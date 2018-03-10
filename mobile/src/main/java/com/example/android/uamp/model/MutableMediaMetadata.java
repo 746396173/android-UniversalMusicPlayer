@@ -22,6 +22,7 @@ import android.text.TextUtils;
 /**
  * Holder class that encapsulates a MediaMetadata and allows the actual metadata to be modified
  * without requiring to rebuild the collections the metadata is in.
+ * 封装了一个MediaMetadata，使得修改实际的metadata时可以不需要重新收集metadata
  */
 public class MutableMediaMetadata {
 

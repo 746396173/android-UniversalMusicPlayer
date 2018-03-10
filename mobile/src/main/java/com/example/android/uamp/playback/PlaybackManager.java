@@ -32,6 +32,7 @@ import com.example.android.uamp.utils.WearHelper;
 
 /**
  * Manage the interactions among the container service, the queue manager and the actual playback.
+ * 管理service容器、队列管理者和playback实例之间的交互
  */
 public class PlaybackManager implements Playback.Callback {
 
@@ -67,7 +68,7 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     /**
-     * Handle a request to play music
+     * 处理播放音乐的请求
      */
     public void handlePlayRequest() {
         LogHelper.d(TAG, "handlePlayRequest: mState=" + mPlayback.getState());
@@ -263,6 +264,8 @@ public class PlaybackManager implements Playback.Callback {
 
 
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
+        //点击播放按钮时触发
+        //通过MediaControllerCompat.getTransportControls().play()触发
         @Override
         public void onPlay() {
             LogHelper.d(TAG, "play");
@@ -272,6 +275,8 @@ public class PlaybackManager implements Playback.Callback {
             handlePlayRequest();
         }
 
+        //播放指定队列媒体时触发
+        //通过MediaControllerCompat.getTransportControls().onSkipToQueueItem(queueId)触发
         @Override
         public void onSkipToQueueItem(long queueId) {
             LogHelper.d(TAG, "OnSkipToQueueItem:" + queueId);
@@ -279,12 +284,16 @@ public class PlaybackManager implements Playback.Callback {
             mQueueManager.updateMetadata();
         }
 
+        //设置到指定进度时触发
+        //通过MediaControllerCompat.getTransportControls().seekTo(position)触发
         @Override
         public void onSeekTo(long position) {
             LogHelper.d(TAG, "onSeekTo:", position);
             mPlayback.seekTo((int) position);
         }
 
+        //播放指定媒体数据时触发
+        //通过MediaControllerCompat.getTransportControls().playFromMediaId(mediaItem.getMediaId(), null)触发
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             LogHelper.d(TAG, "playFromMediaId mediaId:", mediaId, "  extras=", extras);
@@ -292,18 +301,24 @@ public class PlaybackManager implements Playback.Callback {
             handlePlayRequest();
         }
 
+        //暂停时触发
+        //通过MediaControllerCompat.getTransportControls().pause()触发
         @Override
         public void onPause() {
             LogHelper.d(TAG, "pause. current state=" + mPlayback.getState());
             handlePauseRequest();
         }
 
+        //停止播放时触发
+        //通过MediaControllerCompat.getTransportControls().stop()触发
         @Override
         public void onStop() {
             LogHelper.d(TAG, "stop. current state=" + mPlayback.getState());
             handleStopRequest(null);
         }
 
+        //跳到下一首时触发
+        //通过MediaControllerCompat.getTransportControls().skipToNext()触发
         @Override
         public void onSkipToNext() {
             LogHelper.d(TAG, "skipToNext");
@@ -315,6 +330,8 @@ public class PlaybackManager implements Playback.Callback {
             mQueueManager.updateMetadata();
         }
 
+        //跳到上一首时触发
+        //通过MediaControllerCompat.getTransportControls().skipToPrevious()触发
         @Override
         public void onSkipToPrevious() {
             if (mQueueManager.skipQueuePosition(-1)) {
