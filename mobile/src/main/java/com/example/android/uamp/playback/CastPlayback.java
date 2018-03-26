@@ -40,6 +40,7 @@ import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 
 /**
  * An implementation of Playback that talks to Cast.
+ * 和投影播放器交互的实现
  */
 public class CastPlayback implements Playback {
 

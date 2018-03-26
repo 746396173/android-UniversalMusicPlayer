@@ -27,6 +27,7 @@ import java.io.IOException;
 
 /**
  * Implements a basic cache of album arts, with async loading support.
+ * 实现了专辑艺术封面的基本缓冲，支持异步加载
  */
 public final class AlbumArtCache {
     private static final String TAG = LogHelper.makeLogTag(AlbumArtCache.class);

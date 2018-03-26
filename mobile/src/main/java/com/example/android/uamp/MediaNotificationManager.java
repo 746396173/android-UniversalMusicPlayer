@@ -47,6 +47,7 @@ import com.example.android.uamp.utils.ResourceHelper;
  * Keeps track of a notification and updates it automatically for a given
  * MediaSession. Maintaining a visible notification (usually) guarantees that the music service
  * won't be killed during playback.
+ * 为指定的MediaSession跟踪和自动更新 通知。保持可见的 通知 以保证音乐服务在播放音乐的过程中不会被杀
  */
 public class MediaNotificationManager extends BroadcastReceiver {
     private static final String TAG = LogHelper.makeLogTag(MediaNotificationManager.class);

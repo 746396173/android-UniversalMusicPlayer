@@ -34,14 +34,19 @@ import java.util.Map;
 /**
  * Validates that the calling package is authorized to browse a
  * {@link android.service.media.MediaBrowserService}.
+ * 验证某个包名的程序是否有权限访问MediaBrowserService（MediaBrowserService.onGetRoot中进行验证）
  *
  * The list of allowed signing certificates and their corresponding package names is defined in
  * res/xml/allowed_media_browser_callers.xml.
+ * res/xml/allowed_media_browser_callers.xml文件中定义了允许访问的 签名证书及它们对应的包名
  *
  * If you add a new valid caller to allowed_media_browser_callers.xml and you don't know
  * its signature, this class will print to logcat (INFO level) a message with the proper base64
  * version of the caller certificate that has not been validated. You can copy from logcat and
  * paste into allowed_media_browser_callers.xml. Spaces and newlines are ignored.
+ * 如果需要在allowed_media_browser_callers.xml添加一个 有效的调用者，但你不知道他的签名，
+ * 这个类可以帮助你在logcat中打印那些 暂未被验证的 调用者的签名证书。
+ * 你可以从logcat中复制粘贴到allowed_media_browser_callers.xml，注意复制时忽略空格和换行符
  */
 public class PackageValidator {
     private static final String TAG = LogHelper.makeLogTag(PackageValidator.class);

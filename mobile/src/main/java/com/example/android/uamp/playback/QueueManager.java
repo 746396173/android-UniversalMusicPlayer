@@ -39,6 +39,8 @@ import java.util.List;
  * Simple data provider for queues. Keeps track of a current queue and a current index in the
  * queue. Also provides methods to set the current queue based on common queries, relying on a
  * given MusicProvider to provide the actual media metadata.
+ * 为简单的数据提供队列形式的存储容器。跟踪当前队列及队列中的索引。提供基于普通查询设置当前队列的方法
+ * 依赖于给定的MusicProvider提供实际的媒体数据源。
  */
 public class QueueManager {
     private static final String TAG = LogHelper.makeLogTag(QueueManager.class);
@@ -48,9 +50,15 @@ public class QueueManager {
     private Resources mResources;
 
     // "Now playing" queue:
+    //当前播放队列
     private List<MediaSessionCompat.QueueItem> mPlayingQueue;
     private int mCurrentIndex;
 
+    /**
+     * @param musicProvider 数据源提供者
+     * @param resources 系统资源
+     * @param listener 播放数据更新的回调接口
+     */
     public QueueManager(@NonNull MusicProvider musicProvider,
                         @NonNull Resources resources,
                         @NonNull MetadataUpdateListener listener) {
@@ -58,10 +66,17 @@ public class QueueManager {
         this.mListener = listener;
         this.mResources = resources;
 
+        //mPlayingQueue是线程安全的
         mPlayingQueue = Collections.synchronizedList(new ArrayList<MediaSessionCompat.QueueItem>());
         mCurrentIndex = 0;
     }
 
+    /**
+     * Category范畴 Hierarchy层级
+     * 判断是否和当前播放的音乐处于同一层级
+     * @param mediaId
+     * @return
+     */
     public boolean isSameBrowsingCategory(@NonNull String mediaId) {
         String[] newBrowseHierarchy = MediaIDHelper.getHierarchy(mediaId);
         MediaSessionCompat.QueueItem current = getCurrentMusic();
@@ -74,6 +89,10 @@ public class QueueManager {
         return Arrays.equals(newBrowseHierarchy, currentBrowseHierarchy);
     }
 
+    /**
+     * 设置当前的队列索引值
+     * @param index
+     */
     private void setCurrentQueueIndex(int index) {
         if (index >= 0 && index < mPlayingQueue.size()) {
             mCurrentIndex = index;
@@ -95,13 +114,19 @@ public class QueueManager {
         return index >= 0;
     }
 
+    /**
+     * 按照传入的数量跳到队列该数量的位置后（若值为负数则向前跳）开始播放音乐
+     * @param amount
+     * @return
+     */
     public boolean skipQueuePosition(int amount) {
         int index = mCurrentIndex + amount;
         if (index < 0) {
-            // skip backwards before the first song will keep you on the first song
+            // 如果索引值跳到了第一首歌的索引之前，则会从第一首歌开始播放
             index = 0;
         } else {
-            // skip forwards when in last song will cycle back to start of the queue
+            // 通过取余的方式，当索引跳过了最后一首音乐，则回到队列开始处继续计算最终的索引值
+            //（通过这种方式实现了队列的循环）
             index %= mPlayingQueue.size();
         }
         if (!QueueHelper.isIndexPlayable(index, mPlayingQueue)) {
@@ -121,6 +146,9 @@ public class QueueManager {
         return queue != null && !queue.isEmpty();
     }
 
+    /**
+     * 设置播放队列为随机队列
+     */
     public void setRandomQueue() {
         setCurrentQueue(mResources.getString(R.string.random_queue_title),
                 QueueHelper.getRandomQueue(mMusicProvider));
@@ -135,6 +163,9 @@ public class QueueManager {
         // the hierarchy in MediaBrowser and the actual unique musicID. This is necessary
         // so we can build the correct playing queue, based on where the track was
         // selected from.
+        //这里使用的mediaId并不仅限于作为唯一的音乐识别Id，mediaId依赖于MediaBrowser，实际上它是一种层次清晰的mediaId：
+        //在MediaBrowser中它具有 表明层级之间是如何关联的 以及 作为实际音乐唯一识别id 的作用
+        //使用mediaId的必要之处在于我们可以根据 所选择的播放轨迹 来构建正确的播放队列
         boolean canReuseQueue = false;
         if (isSameBrowsingCategory(mediaId)) {
             canReuseQueue = setCurrentQueueItem(mediaId);
@@ -148,6 +179,10 @@ public class QueueManager {
         updateMetadata();
     }
 
+    /**
+     * 通过mCurrentIndex获取当前播放的音乐
+     * @return
+     */
     public MediaSessionCompat.QueueItem getCurrentMusic() {
         if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
             return null;
@@ -166,6 +201,12 @@ public class QueueManager {
         setCurrentQueue(title, newQueue, null);
     }
 
+    /**
+     * 设置当前播放队列
+     * @param title
+     * @param newQueue 新的播放队列
+     * @param initialMediaId 初始的mediaId
+     */
     protected void setCurrentQueue(String title, List<MediaSessionCompat.QueueItem> newQueue,
                                    String initialMediaId) {
         mPlayingQueue = newQueue;
@@ -177,6 +218,9 @@ public class QueueManager {
         mListener.onQueueUpdated(title, newQueue);
     }
 
+    /**
+     * 更新媒体数据
+     */
     public void updateMetadata() {
         MediaSessionCompat.QueueItem currentMusic = getCurrentMusic();
         if (currentMusic == null) {
@@ -192,11 +236,11 @@ public class QueueManager {
 
         mListener.onMetadataChanged(metadata);
 
-        // Set the proper album artwork on the media session, so it can be shown in the
-        // locked screen and in other places.
+        //在MediaSession中设置适当的音乐专辑封面插图，以便在锁屏界面和其他地方显示
         if (metadata.getDescription().getIconBitmap() == null &&
                 metadata.getDescription().getIconUri() != null) {
             String albumUri = metadata.getDescription().getIconUri().toString();
+            //异步获取音乐专辑封面图片，通过回调将图片位图等信息返回来
             AlbumArtCache.getInstance().fetch(albumUri, new AlbumArtCache.FetchListener() {
                 @Override
                 public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
@@ -218,9 +262,9 @@ public class QueueManager {
     }
 
     public interface MetadataUpdateListener {
-        void onMetadataChanged(MediaMetadataCompat metadata);
-        void onMetadataRetrieveError();
-        void onCurrentQueueIndexUpdated(int queueIndex);
-        void onQueueUpdated(String title, List<MediaSessionCompat.QueueItem> newQueue);
+        void onMetadataChanged(MediaMetadataCompat metadata);//媒体数据变更时调用
+        void onMetadataRetrieveError();//媒体数据检索失败时调用
+        void onCurrentQueueIndexUpdated(int queueIndex);//当前播放索引变更时调用
+        void onQueueUpdated(String title, List<MediaSessionCompat.QueueItem> newQueue);//当前播放队列变更时调用
     }
 }

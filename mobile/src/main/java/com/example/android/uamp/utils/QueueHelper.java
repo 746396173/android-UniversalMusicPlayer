@@ -187,6 +187,12 @@ public class QueueHelper {
         return convertToQueue(result, MEDIA_ID_MUSICS_BY_SEARCH, "random");
     }
 
+    /**
+     * 索引是否是有效值（指向的音乐是否可以播放）
+     * @param index
+     * @param queue
+     * @return
+     */
     public static boolean isIndexPlayable(int index, List<MediaSessionCompat.QueueItem> queue) {
         return (queue != null && index >= 0 && index < queue.size());
     }

@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * Specify receiver application ID for cast
+ * 为 投射设备 指定接收器的应用程序的ID
  */
 public class CastOptionsProvider implements OptionsProvider {
 

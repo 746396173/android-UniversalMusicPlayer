@@ -82,13 +82,12 @@ public interface Playback {
 
     interface Callback {
         /**
-         * On current music completed.
+         * 当前音乐播放完成时调用
          */
         void onCompletion();
         /**
-         * on Playback status changed
-         * Implementations can use this callback to update
-         * playback state on the media sessions.
+         * 在播放状态改变时调用
+         * 启用该回调方法可以更新MediaSession上的播放状态
          */
         void onPlaybackStatusChanged(int state);
 

@@ -172,6 +172,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         mPackageValidator = new PackageValidator(this);
 
+        //QueueManager提供四个回调接口
         QueueManager queueManager = new QueueManager(mMusicProvider, getResources(),
                 new QueueManager.MetadataUpdateListener() {
                     @Override
@@ -198,6 +199,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                     }
                 });
 
+        //Service初始化时传入PlaybackManager中的是LocalPlayback
         LocalPlayback playback = new LocalPlayback(this, mMusicProvider);
         mPlaybackManager = new PlaybackManager(this, getResources(), mMusicProvider, queueManager,
                 playback);
@@ -372,6 +374,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // The service needs to continue running even after the bound client (usually a
         // MediaController) disconnects, otherwise the music playback will stop.
         // Calling startService(Intent) will keep the service running until it is explicitly killed.
+        //即使绑定的客户端（通常是指MediaController）断开连接了，Service也需要继续运行，否则音乐将会停止播放。
+        //调用startService(Intent)将保持Service持续运行直到明确要将服务杀掉为止
         startService(new Intent(getApplicationContext(), MusicService.class));
     }
 
@@ -384,6 +388,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mSession.setActive(false);
         // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
         // potentially stopping the service.
+        //重置延迟停止的Handler，所以收到 STOP_DELAY 消息后将再次执行
+        //有可能会停止Service
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
         stopForeground(true);

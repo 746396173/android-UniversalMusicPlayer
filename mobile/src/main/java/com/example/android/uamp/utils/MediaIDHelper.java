@@ -103,6 +103,7 @@ public class MediaIDHelper {
      * convention, a concatenation of category (eg "by_genre"), categoryValue (eg "Classical") and
      * mediaID. This is necessary so we know where the user selected the music from, when the music
      * exists in more than one music list, and thus we are able to correctly build the playing queue.
+     * 通过mediaID获取类型和类型信息
      *
      * @param mediaID that contains a category and categoryValue.
      */

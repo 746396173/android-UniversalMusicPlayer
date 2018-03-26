@@ -93,6 +93,7 @@ public class MusicProvider {
 
     /**
      * Get an iterator over a shuffled collection of all songs
+     * 获取 存储了所有音乐的列表 随机打乱顺序后的迭代器
      */
     public Iterable<MediaMetadataCompat> getShuffledMusic() {
         if (mCurrentState != State.INITIALIZED) {
@@ -102,7 +103,7 @@ public class MusicProvider {
         for (MutableMediaMetadata mutableMetadata: mMusicListById.values()) {
             shuffled.add(mutableMetadata.metadata);
         }
-        Collections.shuffle(shuffled);
+        Collections.shuffle(shuffled);//列表洗牌
         return shuffled;
     }
 
@@ -214,6 +215,11 @@ public class MusicProvider {
         return mCurrentState == State.INITIALIZED;
     }
 
+    /**
+     * 判断该音乐是否在"喜欢"列表中
+     * @param musicId
+     * @return
+     */
     public boolean isFavorite(String musicId) {
         return mFavoriteTracks.contains(musicId);
     }

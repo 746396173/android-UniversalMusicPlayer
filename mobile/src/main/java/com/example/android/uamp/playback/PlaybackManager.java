@@ -38,6 +38,7 @@ public class PlaybackManager implements Playback.Callback {
 
     private static final String TAG = LogHelper.makeLogTag(PlaybackManager.class);
     // Action to thumbs up a media item
+    //对某项媒体内容进行点赞
     private static final String CUSTOM_ACTION_THUMBS_UP = "com.example.android.uamp.THUMBS_UP";
 
     private MusicProvider mMusicProvider;
@@ -81,6 +82,7 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * Handle a request to pause music
+     * 处理暂停音乐的请求
      */
     public void handlePauseRequest() {
         LogHelper.d(TAG, "handlePauseRequest: mState=" + mPlayback.getState());
@@ -92,6 +94,7 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * Handle a request to stop music
+     * 处理停止音乐的请求
      *
      * @param withError Error message in case the stop has an unexpected cause. The error
      *                  message will be set in the PlaybackState and will be visible to
@@ -107,8 +110,9 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * Update the current media player state, optionally showing an error message.
+     * 更新当前媒体播放器的状态，可选择是否显示错误信息
      *
-     * @param error if not null, error message to present to the user.
+     * @param error 如果不为null，错误信息将呈现给用户.
      */
     public void updatePlaybackState(String error) {
         LogHelper.d(TAG, "updatePlaybackState, playback state=" + mPlayback.getState());
@@ -135,6 +139,7 @@ public class PlaybackManager implements Playback.Callback {
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
 
         // Set the activeQueueItemId if the current index is valid.
+        //如果当前索引是有效的
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
             stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
@@ -148,12 +153,17 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    /**
+     * 设置自定义的操作
+     * @param stateBuilder
+     */
     private void setCustomAction(PlaybackStateCompat.Builder stateBuilder) {
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic == null) {
             return;
         }
         // Set appropriate "Favorite" icon on Custom action:
+        //在自定义操作中设置适当的"喜爱"图标
         String mediaId = currentMusic.getDescription().getMediaId();
         if (mediaId == null) {
             return;
@@ -171,6 +181,7 @@ public class PlaybackManager implements Playback.Callback {
                 .build());
     }
 
+    //获取所有可用的动作命令
     private long getAvailableActions() {
         long actions =
                 PlaybackStateCompat.ACTION_PLAY_PAUSE |
@@ -193,11 +204,13 @@ public class PlaybackManager implements Playback.Callback {
     public void onCompletion() {
         // The media player finished playing the current song, so we go ahead
         // and start the next.
+        //当音乐播放器播完了当前歌曲，则继续播放下一首
         if (mQueueManager.skipQueuePosition(1)) {
             handlePlayRequest();
             mQueueManager.updateMetadata();
         } else {
             // If skipping was not possible, we stop and release the resources:
+            //若不可能跳到下一首音乐进行播放，则停止并释放资源
             handleStopRequest(null);
         }
     }

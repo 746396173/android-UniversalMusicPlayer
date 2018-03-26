@@ -23,6 +23,7 @@ import android.text.TextUtils;
 /**
  * For more information about voice search parameters,
  * check https://developer.android.com/guide/components/intents-common.html#PlaySearch
+ * 有关语音搜索参数的信息
  */
 public final class VoiceSearchParams {
 
