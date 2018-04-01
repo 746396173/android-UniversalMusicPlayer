@@ -188,7 +188,6 @@ public class MediaBrowserFragment extends Fragment {
                 "  onConnected=" + mediaBrowser.isConnected());
 
         if (mediaBrowser.isConnected()) {
-            //连接网络加载音乐列表
             onConnected();
         }
 

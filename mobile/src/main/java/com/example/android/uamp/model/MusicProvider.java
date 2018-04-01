@@ -103,7 +103,7 @@ public class MusicProvider {
         for (MutableMediaMetadata mutableMetadata: mMusicListById.values()) {
             shuffled.add(mutableMetadata.metadata);
         }
-        Collections.shuffle(shuffled);//列表洗牌
+        Collections.shuffle(shuffled);//打乱列表的顺序
         return shuffled;
     }
 
