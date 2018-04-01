@@ -346,7 +346,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             result.sendResult(new ArrayList<MediaItem>());
         } else if (mMusicProvider.isInitialized()) {
             // if music library is ready, return immediately
-            //如果音乐库已经准备好了，立即返回
+            //如果音乐库已经准备好了，立即将数据发送至客户端
             result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
         } else {
             // otherwise, only return results when the music library is retrieved

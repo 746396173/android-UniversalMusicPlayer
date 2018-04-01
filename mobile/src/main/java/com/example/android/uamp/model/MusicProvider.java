@@ -44,7 +44,7 @@ import static com.example.android.uamp.utils.MediaIDHelper.createMediaID;
 /**
  * Simple data provider for music tracks. The actual metadata source is delegated to a
  * MusicProviderSource defined by a constructor argument of this class.
- * MusicProvider：简单的音乐路径数据提供者
+ * MusicProvider：简单的音乐数据提供者
  * 真实的数据源是由MusicProviderSource授予的，MusicProviderSource由本类构造函数的参数定义
  */
 public class MusicProvider {
